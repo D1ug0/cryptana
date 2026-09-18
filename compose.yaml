@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cryptana-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cryptana
+      POSTGRES_USER: cryptana
+      POSTGRES_PASSWORD: cryptana_local
+    ports:
+      - "5432:5432"
+    volumes:
+      - cryptana-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cryptana -d cryptana"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  cryptana-postgres-data:
