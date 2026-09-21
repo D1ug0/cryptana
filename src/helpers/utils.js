@@ -1,4 +1,7 @@
 import { transactionPairing } from "../main.js";
+import { isWithinLast14Days } from "./time.js";
+
+export { isWithinLast14Days } from "./time.js";
 
 export const toFixedNumber = (number, float) =>
   Math.round(number * (float ? Math.pow(10, float) : 1e2)) /
@@ -117,15 +120,6 @@ export function calculateTimeDifference(firstTime, lastTime) {
     forCalc: minutes,
   };
 }
-
-export const isWithinLast14Days = (dateString) => {
-  const currentDate = new Date();
-  const orderDate = new Date(dateString);
-  const timeDifference = currentDate - orderDate;
-  const daysDifference = timeDifference / (1000 * 60 * 60 * 24);
-
-  return daysDifference <= 14;
-};
 
 export const whaleValidation = (summary, transactions) => {
   return (

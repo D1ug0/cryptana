@@ -5,7 +5,10 @@ import { processingParse } from "../src/algorithms/definedTest/help/processingPa
 import { normalizeTargetTokenEvent } from "../src/algorithms/definedTest/help/getAllTransactionsToken.js";
 import { remapAlgorithm } from "../src/algorithms/remapAlgorithm.js";
 import { hasMinimumReturnMultiple } from "../src/helpers/profitability.js";
-import { isTimestampDifferenceWithinDays } from "../src/helpers/time.js";
+import {
+  isTimestampDifferenceWithinDays,
+  isWithinLast14Days,
+} from "../src/helpers/time.js";
 import { isTokenNotFoundError } from "../src/algorithms/definedTest/query/getTokenInfo.js";
 import { fetchWalletTransactions } from "../src/algorithms/queryWalletsTransactions.js";
 import { $apiZerion } from "../src/api/config.js";
@@ -71,6 +74,15 @@ test("timestamp comparison uses seconds and rejects either direction past the li
   assert.equal(isTimestampDifferenceWithinDays(14 * 86400, 14), true);
   assert.equal(isTimestampDifferenceWithinDays(-14 * 86400, 14), true);
   assert.equal(isTimestampDifferenceWithinDays(14 * 86400 + 1, 14), false);
+});
+
+test("recent-date validation rejects future and invalid dates", () => {
+  const now = Date.UTC(2026, 8, 21, 12);
+
+  assert.equal(isWithinLast14Days(now - 14 * 86400 * 1000, now), true);
+  assert.equal(isWithinLast14Days(now - 14 * 86400 * 1000 - 1, now), false);
+  assert.equal(isWithinLast14Days(now + 1, now), false);
+  assert.equal(isWithinLast14Days("not-a-date", now), false);
 });
 
 test("additional fees are deducted even when no liquidity response exists", () => {
