@@ -16,6 +16,10 @@ export const arrangeTransactionsByToken = (allWalletTransactions) => {
             (i) => i.chain_id === "ethereum"
           )?.address;
 
+          if (!tokenContract) {
+            return;
+          }
+
           let tokenGroup = result.find(
             (group) => group.tokenContract === tokenContract
           );
