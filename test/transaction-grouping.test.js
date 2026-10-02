@@ -51,3 +51,43 @@ test("groups tokens by their Ethereum contract", () => {
   assert.equal(groups[0].tokenContract, "0xtoken");
   assert.equal(groups[0].transactions.length, 1);
 });
+
+test("does not mistake another contract with the same symbol for a purchase", () => {
+  const groups = arrangeTransactionsByToken([
+    page(
+      transfer({
+        symbol: "TOKEN",
+        chainId: "ethereum",
+        address: "0xsold",
+        direction: "out",
+      }),
+      transfer({
+        symbol: "TOKEN",
+        chainId: "ethereum",
+        address: "0xbought",
+      })
+    ),
+  ]);
+
+  assert.deepEqual(groups.map((group) => group.tokenContract), ["0xbought"]);
+});
+
+test("groups the same Ethereum contract regardless of address casing", () => {
+  const groups = arrangeTransactionsByToken([
+    page(
+      transfer({
+        symbol: "TOKEN",
+        chainId: "ethereum",
+        address: "0xAbC",
+      }),
+      transfer({
+        symbol: "TOKEN",
+        chainId: "ethereum",
+        address: "0xaBc",
+      })
+    ),
+  ]);
+
+  assert.equal(groups.length, 1);
+  assert.equal(groups[0].transactions.length, 1);
+});
